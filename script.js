@@ -22,7 +22,7 @@ function operate(op,a,b){
     }
     else if (op == "/")
     {
-        return
+        return divide(a,b)
     }
     else{
         return
@@ -31,27 +31,32 @@ function operate(op,a,b){
 }
 
 let num1 = "";
-let num2 = "";
-let value = "";
+let input = "";
 let symbol = "";
+let answer = false;
 const d = document.querySelector(".display");
 
-function calculate(){
+function clear(){
+    num1 = "";
+    input = "";
+    symbol = "";
+    d.textContent = "0";
+}
 
+function equation(){
+    console.log(`${num1} ${symbol} ${input}`);
 }
 
 const numbers = document.querySelectorAll(".operand");
 numbers.forEach((button) => {
     button.addEventListener('click', function(e) {
-        if(!symbol){
-            value = value + e.target.value;
-            console.log(value);
+        if(answer){
+            clear();
+            answer = false;
         }
-        else {
-            value = value + e.target.value;
-            console.log(value);
-        }
-        // console.log(typeof(e.target.value));
+        input = input + e.target.value;
+        d.textContent = input;
+        console.log(input);
    
     })
 })
@@ -59,24 +64,52 @@ numbers.forEach((button) => {
 const operators = document.querySelectorAll(".operator");
 operators.forEach((button) => {
     button.addEventListener('click', function(e) {
-        if(e.target.value === "="){
-            num2 = value;
-            console.log(symbol);
-            console.log(operate(symbol,num1,num2))
-            d.textContent = operate(symbol,num1,num2)
+        console.log(e.target.value);
+        if (e.target.value === "C"){
+            clear();
+            return;
         }
-        else{
+        if (num1 && symbol) {
+            if (!input){
+                symbol = e.target.value;
+                return;
+            }
+            else{
+                if(e.target.value === "="){
+                    equation();
+                    d.textContent = operate(symbol,num1,input)
+                    console.log(num1 = (operate(symbol,num1,input).toString()))
+                    answer = true;
+                }
+                else{
+                    if(answer){
+                        symbol = e.target.value;
+                        input = "";
+                        answer = false;
+                        return;
+                    }
+                    equation();
+                    d.textContent = operate(symbol,num1,input)
+                    console.log(num1 = (operate(symbol,num1,input).toString()))
+                    symbol = e.target.value;
+                    input = "";
+                }
+            }
+        }
+        else {
             symbol = e.target.value;
-            console.log(symbol);
-            num1 = value;
-            value = ""; 
+            num1 = input;
+            if(symbol=== "="){
+                console.log(num1)
+                symbol = "";
+                return;
+            }
+            input = "";
         }
- 
     })
 })
 
 // display.innerText = '5';
-
 
 // const sum = (list) =>  list.reduce( (a, b) => a + b , 0);
 
