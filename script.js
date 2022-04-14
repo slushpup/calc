@@ -34,7 +34,7 @@ let num1 = "";
 let input = "";
 let symbol = "";
 let answer = false;
-const d = document.querySelector(".display");
+const d = document.querySelector(".result");
 
 function clear(){
     num1 = "";
