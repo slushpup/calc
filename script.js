@@ -61,6 +61,11 @@ const numbers = document.querySelectorAll(".operand");
 numbers.forEach((button) => {
     button.addEventListener('click', function(e) {
         if (e.target.value=="%"){
+            if(answer){
+                num1 = num1 * 0.01;
+                display(num1);
+                return;
+            }
             input = (input * 0.01).toString();
         }
         else if(e.target.value == "sign"){
