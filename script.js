@@ -31,25 +31,31 @@ function operate(op,a,b){
 }
 
 let num1 = "";
-let input = "";
+let input = "0";
 let symbol = "";
 let answer = false;
 const d = document.querySelector(".result");
 
 function clear(){
     num1 = "";
-    input = "";
+    input = "0";
     symbol = "";
-    d.textContent = "0";
 }
 
 function display(str){
-    console.log(str);
-    if(str.length > 12){
-        str = Number(str).toExponential(7);
+    if(Number(str) > 9999999999999){
+        str = Number(str).toExponential(6);
+        console.log(str);
+    }
+    else if ( str.length > 13){
+        // str = +parseFloat(str).toFixed(5);
+        str = str.substring(0,13);
     }
     d.textContent = str;
 }
+
+divideByZero= (sym,num) => {return (Number(num) === 0 && sym === "/")};
+
 
 const numbers = document.querySelectorAll(".operand");
 numbers.forEach((button) => {
@@ -57,14 +63,27 @@ numbers.forEach((button) => {
         if (e.target.value=="%"){
             input = (input * 0.01).toString();
         }
+        else if(e.target.value == "sign"){
+            if(answer){
+                num1 = num1 * (-1);
+                display(num1);
+                return;
+            }
+            else{
+                if(input){
+                    input = input * (-1);
+                }else{
+                    input = num1 * (-1);
+                }
+            }
+        }
         else if (e.target.value=="C"){
             clear();
         }
         else if (e.target.value == "DEL"){
             input = input.slice(0,-1);
-            // console.log(input.slice(0,-1));
         }
-        else if(input.length<12){
+        else if(input.length<13){
             if(answer){
                 clear();
                 answer = false;
@@ -72,14 +91,22 @@ numbers.forEach((button) => {
             if((e.target.value == "." && (input.indexOf(".")!=-1))){
                 return;
             }
-            if(e.target.value == "." && input === ""){
+            if(e.target.value == "." && input == ""){      
                 input = "0";
+            }
+            if(e.target.value == "." && input == "0"){    
+                input = "0";
+            }
+            else if(input == "0"){
+                if(e.target.value=="0"){
+                    return;
+                }
+                input = "";
             }
             input = input + e.target.value;
         }
-
         if (input === ""){
-            display("0");
+            input = "0";
         }
         else{
             display(input);
@@ -90,17 +117,6 @@ numbers.forEach((button) => {
 const operators = document.querySelectorAll(".operator");
 operators.forEach((button) => {
     button.addEventListener('click', function(e) {
-        // console.log(e.target.value);
-        if(e.target.value == "sign"){
-            if(answer){
-                num1 = num1 * (-1);
-                display(num1);
-            }
-            else{
-                input = input * (-1);
-                display(input);
-            }
-        }
         if (num1 && symbol) {
             if (!input){
                 symbol = e.target.value;
@@ -108,7 +124,10 @@ operators.forEach((button) => {
             }
             else{
                 if(e.target.value === "="){
-                    // equation();
+                    if(divideByZero(symbol,input) === true){
+                        display("Error");
+                        return;
+                    }
                     display(operate(symbol,num1,input).toString());
                     console.log(num1 = (operate(symbol,num1,input).toString()))
                     answer = true;
@@ -118,9 +137,12 @@ operators.forEach((button) => {
                         symbol = e.target.value;
                         input = "";
                         answer = false;
+                        return;  
+                    }
+                    if(divideByZero(symbol,input) === true){
+                        display("Error");
                         return;
                     }
-                    // equation();
                     display(operate(symbol,num1,input).toString());
                     console.log(num1 = (operate(symbol,num1,input).toString()))
                     symbol = e.target.value;
